@@ -1,0 +1,36 @@
+server:
+  port: 2005
+
+spring:
+  application:
+    name: bills-service
+  datasource:
+    url: jdbc:postgresql://localhost:5432/fintech
+    username: postgres
+    password: 1234
+  jpa:
+    hibernate:
+      ddl-auto: update
+
+billers:
+  categories:
+    - name: AIRTIME
+      billers:
+        - name: MTN
+          code: MTN-01
+        - name: Airtel
+          code: AIRTEL-01
+    - name: ELECTRICITY
+      billers:
+        - name: IKEDC
+          code: IKEDC-01
+        - name: EKEDC
+          code: EKEDC-01
+
+payment:
+  validation-timeout: 5000 # 5 seconds
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:2000/eureka

@@ -1,0 +1,33 @@
+server:
+  port: 2003
+
+spring:
+  application:
+    name: customer-service
+  datasource:
+    url: jdbc:postgresql://localhost:5432/fintech
+    username: postgres
+    password: 1234
+  jpa:
+    hibernate:
+      ddl-auto: update
+
+bvn:
+  validation:
+    url: http://localhost:7070/validate-bvn  # Mock service URL
+    timeout: 5000
+    api-key: mock-api-key-123
+
+nin:
+  validation:
+    url: http://localhost:7070/validate-nin
+    timeout: 5000
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:2000/eureka
+
+services:
+  account-service:
+    url: http://localhost:2004

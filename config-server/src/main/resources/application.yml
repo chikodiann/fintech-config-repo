@@ -1,0 +1,23 @@
+server:
+  port: 2001
+
+spring:
+  application:
+    name: config-server
+  profiles:
+    active: native
+  cloud:
+    config:
+      server:
+        git:
+          uri: https://github.com/chikodiann/fintech-config-repo.git
+          search-paths: '{application}'  # Looks for {application}-{profile}.yml
+          clone-on-start: true
+  security:
+    user:
+      name: admin
+      password: configpass  # Basic auth for security
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:2000/eureka/

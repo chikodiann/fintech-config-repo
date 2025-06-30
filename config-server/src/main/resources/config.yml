@@ -1,0 +1,134 @@
+# =============================================
+# FINCONFIG - CENTRALIZED CONFIGURATION
+# =============================================
+
+# -----------------------------------------------------------------
+# GLOBAL DEFAULTS (Can be overridden per-service)
+# -----------------------------------------------------------------
+fintech:
+  app:
+    name: "Digital Fintech Middleware"
+    version: "1.0"
+  security:
+    jwt:
+      issuer: "fintech-middleware"
+      expiration-ms: 86400000 # 24h
+
+# -----------------------------------------------------------------
+# SERVICE-SPECIFIC CONFIGURATIONS
+# -----------------------------------------------------------------
+
+# ================== CUSTOMER SERVICE ==================
+customer-service:
+  fintech:
+    onboarding:
+      bvn:
+        validation-url: "https://api.nibss.gov.ng/bvn/verify" # Mock URL
+        api-key: "${NIBSS_API_KEY}" # Inject from env
+      nin:
+        validation-url: "https://api.nimc.gov.ng/nin/verify" # Mock URL
+    auth:
+      password:
+        strength: 8 # Min characters
+        special-chars-required: true
+
+# ================== ACCOUNT SERVICE ==================
+account-service:
+  fintech:
+    accounts:
+      default-type: "SAVINGS"
+      min-opening-balance: 1000.00
+      max-accounts-per-customer: 5
+    transaction:
+      daily-limit: 500000.00
+
+# ================== BILLS SERVICE ==================
+bills-service:
+  fintech:
+    billers:
+      categories:
+        - "AIRTIME"
+        - "ELECTRICITY"
+        - "INTERNET"
+      airtime:
+        providers: ["MTN", "AIRTEL", "GLO", "9MOBILE"]
+      electricity:
+        providers: ["IKEDC", "EKEDC", "PHED"]
+    payment:
+      commission-rate: 0.015 # 1.5%
+
+# ================== TRANSFER SERVICE ==================
+transfer-service:
+  fintech:
+    banks:
+      provider-url: "https://api.paystack.co/bank" # Paystack bank list
+      cache-ttl-minutes: 1440 # 24h caching
+    limits:
+      per-transaction: 10000000.00 # 10M
+      daily: 50000000.00 # 50M
+
+# ================== DASHBOARD SERVICE ==================
+dashboard-service:
+  fintech:
+    cache:
+      ttl-minutes: 5 # Short cache for real-time data
+    aggregates:
+      recent-transactions-count: 10
+
+# ================== API GATEWAY ==================
+gateway-service:
+  spring:
+    cloud:
+      gateway:
+        routes:
+          - id: customer-service
+            uri: lb://customer-service
+            predicates:
+              - Path=/auth/**
+            filters:
+              - name: CircuitBreaker
+                args:
+                  name: customerCB
+                  fallbackUri: forward:/fallback/customer
+
+          - id: account-service
+            uri: lb://account-service
+            predicates:
+              - Path=/accounts/**
+
+          - id: bills-service
+            uri: lb://bills-service
+            predicates:
+              - Path=/bills/**
+
+          - id: transfer-service
+            uri: lb://transfer-service
+            predicates:
+              - Path=/transfers/**
+
+          - id: dashboard-service
+            uri: lb://dashboard-service
+            predicates:
+              - Path=/dashboard/**
+
+# -----------------------------------------------------------------
+# INTEGRATION POINTS
+# -----------------------------------------------------------------
+integration:
+  nibss:
+    base-url: "https://api.nibss.gov.ng"
+    timeout-ms: 5000
+  paystack:
+    base-url: "https://api.paystack.co"
+    secret-key: "${PAYSTACK_SECRET_KEY}"
+
+# -----------------------------------------------------------------
+# PERFORMANCE TUNING
+# -----------------------------------------------------------------
+performance:
+  hikari:
+    pool-size: 10
+    connection-timeout: 30000
+  redis:
+    enabled: true
+    ttl-minutes: 30

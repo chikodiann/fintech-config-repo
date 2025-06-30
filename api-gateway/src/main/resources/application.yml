@@ -1,0 +1,45 @@
+server:
+  port: 2002
+
+spring:
+  application:
+    name: api-gateway
+  cloud:
+    gateway:
+      routes:
+        - id: customer-service
+          uri: lb://customer-service
+          predicates:
+            - Path=/api/v1/auth/**
+          filters:
+            - StripPrefix=2
+            - name: CircuitBreaker
+              args:
+                name: customerService
+                fallbackUri: forward:/fallback/customer
+        - id: account-service
+          uri: lb://account-service
+          predicates:
+            - Path=/api/v1/accounts/**
+        - id: bills-service
+          uri: lb://bills-service
+          predicates:
+            - Path=/api/v1/bills/**
+        - id: transfer-service
+          uri: lb://transfer-service
+          predicates:
+            - Path=/api/v1/transfers/**
+        - id: dashboard-service
+          uri: lb://dashboard-service
+          predicates:
+            - Path=/api/v1/dashboard/**
+
+        # Add other services similarly...
+      discovery:
+        locator:
+          enabled: true  # Auto-discover services from Eureka
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:2000/eureka

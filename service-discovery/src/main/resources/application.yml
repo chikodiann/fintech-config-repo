@@ -1,0 +1,27 @@
+server:
+  port: 2000
+
+eureka:
+  instance:
+    lease-renewal-interval-in-seconds: 10  # Send heartbeat every 10s
+    lease-expiration-duration-in-seconds: 30  # Instance dies after 30s
+  client:
+    register-with-eureka: false  # This is the server; doesn't register itself
+    fetch-registry: false
+    service-url:
+      defaultZone: http://localhost:2000/eureka
+  server:
+    enable-self-preservation: false  # Disable self-preservation mode
+    eviction-interval-timer-in-ms: 5000  # Check for expired instances every 5s
+
+spring:
+  application:
+    name: service-discovery
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  security:
+    enabled: true

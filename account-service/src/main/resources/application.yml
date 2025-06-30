@@ -1,0 +1,23 @@
+server:
+  port: 2004
+
+spring:
+  application:
+    name: account-service
+  datasource:
+    url: jdbc:postgresql://localhost:5432/fintech
+    username: postgres
+    password: 1234
+  jpa:
+    hibernate:
+      ddl-auto: update
+
+account:
+  number:
+    prefix: "02"
+    length: 10
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:2000/eureka

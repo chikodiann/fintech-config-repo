@@ -1,0 +1,28 @@
+server:
+  port: 2006
+
+spring:
+  application:
+    name: transfer-service
+  datasource:
+    url: jdbc:postgresql://localhost:5432/fintech
+    username: postgres
+    password: 1234
+  jpa:
+    hibernate:
+      ddl-auto: update
+
+transfer:
+  fee-percentage: 0.5
+  min-amount: 100
+  banks-api-url: https://api.paystack.co/bank # Nigerian banks
+  api-key: sk_test_yourkey
+
+limits:
+  daily-max: 500000.00
+  per-transaction-max: 100000.00
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:2000/eureka
