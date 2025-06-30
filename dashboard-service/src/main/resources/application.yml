@@ -1,0 +1,30 @@
+server:
+  port: 2007
+
+spring:
+  application:
+    name: dashboard-service
+  datasource:
+    url: jdbc:postgresql://localhost:5432/fintech
+    username: postgres
+    password: 1234
+  jpa:
+    hibernate:
+      ddl-auto: update
+
+dashboard:
+  cache-ttl: 30000 # 30 seconds
+  refresh-interval: 60000 # 1 minute
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:2000/eureka
+
+services:
+  account-service:
+    url: http://localhost:2004
+  transfer-service:
+    url: http://localhost:2006
+  bills-service:
+    url: http://localhost:2005
